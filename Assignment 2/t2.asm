@@ -9,6 +9,8 @@ public g	; export variable g
 g QWORD 4	; declare global variable g initialised to 4
 
 fxp2 db		'a = %I64d b = %I64d c = %I64d d = %I64d e = %I64d sum = %I64d\n', 0AH, 00H
+
+fqns db		'qns\n', 0AH, 00H
  
 .code
 
@@ -68,21 +70,36 @@ skip:		mov		rax, rcx
 public q						    ; export function name
 
  q:			push	rbx			    ; save rbx
-			mov		rax, [rsp+40]   ; rax = e
+			mov		rax, [rsp+48]   ; rax = e
 			add		rax, rcx
 			add		rax, rdx
 			add		rax, r8
 			add		rax, r9			; rax = sum
 			mov		rbx, rax		; save sum
-			mov		r10, [rsp+40]   ; r10 = e;
-			push	rax
-			push	r10
+			mov		r10, [rsp+48]   ; r10 = e;
+			push	rax				; sum
+			push	r10				; e
+			push	r9				; d
+			mov		r9, r8
+			mov		r8, rdx
+			mov		rdx, rcx
+			lea		rcx, fxp2	; the string
 			sub		rsp, 32
 			call	printf
-			add		rsp, 32
+			add		rsp,56
 			mov		rax, rbx
 
 			pop		rbx
 			ret
+
+public qns							; export function name
+
+qns:		lea		rcx, fqns
+			;sub		rsp, 32
+			call	printf
+			;add		rsp, 32
+			mov		rax, 0
+			ret
+
 
 end
