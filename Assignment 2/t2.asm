@@ -18,34 +18,34 @@ fqns db		'qns\n', 0AH, 00H
 public  min                      ; export function name
 
 min:	    mov     rax, rcx        ; 
-            cmp     rax, rdx        ;
-            jle     skip1           ;
-            mov     rax, rdx        ; 
-skip1:      cmp     rax, r8         ; 
-            jle     skip2		    ;
-            mov     rax, r8         ; 
+            cmp     rax, rdx        ; if a <= b
+            jle     skip1           ; min a
+            mov     rax, rdx        ; else min = b
+skip1:      cmp     rax, r8         ; if a <= c
+            jle     skip2		    ; min = a
+            mov     rax, r8         ; else min = c
 skip2:		ret						;
 			
 public p						; export function name
 
-p:			push	rbx
+p:			push	rbx			; save used non-volatiles
 			push	r12
 			mov		rbx, r8		; save parameter to non-volatile
 			mov		r12, r9		; save parameter to non-volatile
 			mov		r8, rdx
 			mov		rdx, rcx
-			mov		rcx, [g]    ;
+			mov		rcx, [g]    ; load global g
 			sub		rsp, 32		; shadow space
 			call	min			;
 			add		rsp, 32
 			mov		rcx, rax
 			mov		rdx, rbx
-			mov		r8,  r12
+			mov		r8,  r12	; shadow space
 			sub		rsp, 32
 			call	min
 			add		rsp, 32
 
-			pop r12
+			pop r12				; return saved registers
 			pop rbx
 			ret 
 
@@ -95,9 +95,9 @@ public q						    ; export function name
 public qns							; export function name
 
 qns:		lea		rcx, fqns
-			;sub		rsp, 32
+			sub		rsp, 32
 			call	printf
-			;add		rsp, 32
+			add		rsp, 32
 			mov		rax, 0
 			ret
 
